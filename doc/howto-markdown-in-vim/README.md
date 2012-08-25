@@ -100,4 +100,4 @@ The meanings are intuitive.
 
 ### Screenshot
 
-<img src="https://raw.github.com/hupili/evermd/tree/master/doc/howto-markdown-in-vim/screen1.jpg" />
+<img src="https://raw.github.com/hupili/evermd/master/doc/howto-markdown-in-vim/screen1.jpg" />
