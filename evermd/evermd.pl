@@ -51,12 +51,23 @@ sub parse_table{
 	return "<table border=1>\n$body\n</table>" ;
 }
 
-sub parse {
+sub parse_css{
+	my ($text) = @_ ;
+	return qq(<link href="$text" rel="stylesheet" type="text/css" />\n)
+	# The following way is suggested by some blog authors. 
+	# In my test, it does not show any difference from the above one. 
+	# Both are surrended by <p></p> labels after markdown translation. 
+	# Towards this end, I stick to the latest standard way. 
+	#return qq(<link href="$text" rel="stylesheet" type="text/css"></link>\n)
+}
+
+sub parse{
 	my ($marker, $text) = @_ ;
 	if ($marker eq "table") {
 		return parse_table($text) ;
-	}
-	else {
+	} elsif ($marker eq "css") {
+		return parse_css($text) ;
+	} else {
 		die("unknown marker $marker") ;
 	}
 }
