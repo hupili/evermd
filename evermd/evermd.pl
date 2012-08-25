@@ -64,7 +64,6 @@ sub parse {
 # ========= main ===========
 
 open f_med, " | markdown > /dev/stdout" ;
-my $str = `cat test.md` ;
 
 my $cur_marker = "" ;
 my $cur_text = "" ;
