@@ -1,0 +1,114 @@
+<h1>Configure VIM for MarkDown (Topic Tag List)</h1>
+
+<h2>Prerequisite</h2>
+
+<p>You should know the following things first:</p>
+
+<ul>
+<li>VIM: <a href="http://www.vim.org/">http://www.vim.org/</a></li>
+<li>Taglist: <a href="http://vim-taglist.sourceforge.net/">http://vim-taglist.sourceforge.net/</a></li>
+<li>ctags: <a href="http://ctags.sourceforge.net/">http://ctags.sourceforge.net/</a></li>
+</ul>
+
+<h2>Syntax</h2>
+
+<p>There are some existing works to highlight Markdown documents:
+<a href="https://github.com/tpope/vim-markdown">https://github.com/tpope/vim-markdown</a></p>
+
+<p>This one is already very good. 
+I will tweak some points later. </p>
+
+<h2>List Topics</h2>
+
+<p>To help fast navigate in a md document, 
+it's critical to have the topic lists. 
+It's a pity that I did not find complete 
+solution on this issue. </p>
+
+<p>Here's one off-the-shelf plugin, tocdown:
+<a href="http://www.vim.org/scripts/script.php?script_id=3856">http://www.vim.org/scripts/script.php?script_id=3856</a></p>
+
+<p>It solves the problem, but I just don't want to 
+use more plugins. I want to figure out a way to 
+let the existing plugins work. 
+It turns out that VIM plugin "Taglist" and the universal 
+tag generator "ctags" do solve the problem. 
+Here's the HOWTO. </p>
+
+<h3>Overall Description</h3>
+
+<p>The Tlist work in the following prcess:</p>
+
+<ul>
+<li>VIM identifies the filetype. </li>
+<li>Tlist parse the current file using filetype. </li>
+<li>ctags is the backend for Tlist parsing. </li>
+<li>Tlist then show categorized tags in a side bar. </li>
+</ul>
+
+<h3>VIM filetype Identification</h3>
+
+<p>The simplest way is to add this line in ".vimrc":</p>
+
+<pre><code>au BufNewFile,BufRead *.md set filetype=markdown
+</code></pre>
+
+<p>You can also set other commonly used extensions like *.mkd *.markdown
+(comma separated).
+If you installed the "vim-markdown" plugin mentioned in the 
+previous section, you already have markdown detection logic there. 
+(If the filetype is not detected, how to highlight syntax?)
+Then you don't worry about this section. </p>
+
+<h3>ctags Support</h3>
+
+<p>ctags is a powerful tool. 
+You can pass command line options in to support parsing any files. 
+The "$HOME/.ctags" file stores user specified commands. 
+They will be loaded at each invokation of ctags sequentially. 
+You can put the following lines in the config file:</p>
+
+<pre><code>--langdef=markdown
+--langmap=markdown:.md
+--regex-markdown=/^#[ \t]+(.*)/-\1/h,heading1/
+--regex-markdown=/^##[ \t]+(.*)/-  \1/h,heading2/
+--regex-markdown=/^###[ \t]+(.*)/-    \1/h,heading3/
+--regex-markdown=/^####[ \t]+(.*)/-      \1/h,heading4/
+--regex-markdown=/^#####[ \t]+(.*)/-        \1/h,heading5/
+--regex-markdown=/^######[ \t]+(.*)/-          \1/h,heading6/
+--regex-markdown=/^#######[ \t]+(.*)/-            \1/h,heading7/
+</code></pre>
+
+<p>Here's the explanation:</p>
+
+<ul>
+<li>"langdef" defines a new language</li>
+<li>"langmap" maps the suffices to a language</li>
+<li>"--regex-{language}" specify the parsing regular expressions.
+The three parts of "/{1}/{2}/{3}/" are:
+<ul>
+<li>Matching pattern. </li>
+<li>Substitution pattern. This is used to generate tag names shown on the side bar. </li>
+<li>The single character before the comma specifies the type. 
+The rest after comma is description. 
+You can treat them as comments. </li>
+</ul></li>
+</ul>
+
+<p>Note that in the substitution pattern, I add many blanks. 
+This is to help indent the headings in tag bar. 
+The preceding "-" is essential, or Tlist will trim the string.</p>
+
+<h3>Tlist settings</h3>
+
+<p>Configure the last piece in "$HOME/.ctags":</p>
+
+<pre><code>let g:tlist_markdown_settings = 'markdown;h:Headlins'
+</code></pre>
+
+<p>The meanings are intuitive. 
+"Headlines" is the category title shown in Tlist bar. </p>
+
+<h3>Screenshot</h3>
+
+<p><img src="" /></p>
