@@ -4,6 +4,18 @@ use strict ;
 
 my $ARGC = @ARGV ;
 
+# In evermd preprocessing section. 
+# You can specify some additional attributes. 
+# They can be HTML attributes (usual case). 
+# Or they can be something evernote understands. 
+# How to interpret the attributes depends on 
+# evermd implementation. It's suggested not to 
+# use them since both markdown and evermd 
+# intends to introduce a super simple syntax. 
+# This extension only leaves a backup for 
+# functions people may think important. 
+our %h_attrs = () ;
+
 sub parse_table_line{
 	my ($type, $line) = @_ ;
 	my $row = "" ;
@@ -47,8 +59,15 @@ sub parse_table{
 	for my $line(@a_lines){
 		$body .= parse_table_line("td", $line)
 	}
+
+	my $style = "" ;
+	#for my $k(keys %h_attrs){print STDERR $k} ;
+	if (exists $h_attrs{"style"}){
+		my $css_string = $h_attrs{"style"} ;
+		$style = qq(style="$css_string") ;
+	}
 	#return "<table>\n$body\n</table>" ;
-	return "<table border=1>\n$body\n</table>" ;
+	return "<table border=1 $style>\n$body\n</table>" ;
 }
 
 sub parse_css{
@@ -61,12 +80,24 @@ sub parse_css{
 	#return qq(<link href="$text" rel="stylesheet" type="text/css"></link>\n)
 }
 
+sub parse_attribute{
+	my ($text) = @_ ;
+	my @a_lines = split "\n", $text ;
+	chomp $a_lines[0] ;
+	chomp $a_lines[1] ;
+	#print STDERR "@a_lines" ;
+	$h_attrs{$a_lines[0]} = $a_lines[1] ;
+	return ""
+}
+	
 sub parse{
 	my ($marker, $text) = @_ ;
 	if ($marker eq "table") {
 		return parse_table($text) ;
 	} elsif ($marker eq "css") {
 		return parse_css($text) ;
+	} elsif ($marker eq "attribute"){
+		return parse_attribute($text) ;
 	} else {
 		die("unknown marker $marker") ;
 	}
@@ -97,6 +128,11 @@ while (my $line = <STDIN>){
 		} else {
 			#print STDERR parse($cur_marker, $cur_text) ;
 			print f_med parse($cur_marker, $cur_text) ;
+			if ($cur_marker ne "attribute"){
+				# Clear remembered attributes after each evermd 
+				# pre-processing section. 
+				%h_attrs = () ;
+			}
 			$cur_marker = "" ;
 		}
 		next ;
