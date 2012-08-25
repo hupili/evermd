@@ -3,6 +3,17 @@ evermd
 
 Ever MarkDown! Solution Stacks for Markdown Usage
 
+Legend
+----
+
+One day, two coders met on their way home. 
+
+One asked: have you ever marked down?
+
+The other replied: sure! I have Ever MarkDown (evermd)! It's awesome!
+
+   > It seems the second guy missed the sound of "-ed". -_-//
+
 Introduction
 ----
 
