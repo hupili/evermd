@@ -4,7 +4,67 @@ use strict ;
 
 #my $ARGC = @ARGV ;
 
-sub parse_table {
+sub parse_table_line{
+	my ($type, $line) = @_ ;
+	my $row = "" ;
+
+	#print STDERR "---\n" ;
+	#print STDERR $line ;
+	#$line =~ s/(^|\s+)(&+ )([^&]+)/\1\2\n/g ;
+	$line =~ s/(&+ )([^&]+)/\1\2\n/g ;
+	#print STDERR $line ;
+	for my $cell(split "\n", $line){
+		#if ($cell =~ /((^|\s+)(&+)([^&]*))/){
+		if ($cell =~ /(&+ )([^&]*)/){
+			#print STDERR "s1:'$1'\n" ;
+			#print STDERR "s2:'$2'\n" ;
+			my $col = length($1) - 1 ;
+			my $text = $2 ;
+			my $colstr = "" ;
+			if ( $col > 1 ){
+				$colstr = "colspan=$col" ;
+			}
+			$row .= "<$type $colstr>$text</$type>" ;
+		}
+	}
+	#print STDERR $row, "\n" ;
+	#print STDERR "---\n" ;
+
+	#the following code fails, it's getting too complicated
+	#my $len = length($line) ;
+	#my $postype = 0 ; #0:nothing, 1: '&', 2: text
+	#my $col = 0 ;
+	#my $text = "" ;
+	#for (my $i = 0 ; $i < $len ; $i ++){
+	#	my $c = $line[$i] ;
+	#	# escape for delimetor "\&"
+	#	if ( $c eq "\\" ){
+	#		if ( $i < $len - 1 && $line[$len - 1] eq "&" ){
+	#			$text .= "&" ;
+	#		} 
+	#		next ;
+	#	}
+	#	if ( $postype != 2 ){
+	#		if ( $c eq "&" ){
+	#			if ( $postype == 0 ){
+	#				$postype = 1 ;
+	#			}
+	#			$col ++ ;
+	#			next ;
+	#		} else {
+	#			
+	#		}
+	#	}
+	#	my $colstr = "" ;
+	#	if ( $col > 1 ){
+	#		"colspan=$col" ;
+	#	}
+	#	$row .= "<$type $colstr>$text</$type>" ;
+	#}
+	return "<tr>$row</tr>\n" ;
+}
+
+sub parse_table{
 	my ($text) = @_ ;
 	my $body = "" ;
 
@@ -17,10 +77,11 @@ sub parse_table {
 	if ( $a_lines[0] =~ /^---/ ){
 		shift @a_lines ;
 	} elsif ( $a_lines[1] =~ /^---/ ){
-		for my $h(split "&", shift @a_lines){
-			$body .= "<th>$h</th>" ;
-		}
-		$body = "<tr>$body</tr>\n" ;
+		#for my $h(split "&", shift @a_lines){
+		#	$body .= "<th>$h</th>" ;
+		#}
+		#$body = "<tr>$body</tr>\n" ;
+		$body = parse_table_line("th",  shift @a_lines) ;
 		shift @a_lines ;
 	} else {
 		die("ill evermd table notation:".
@@ -29,11 +90,7 @@ sub parse_table {
 
 	# parse rows
 	for my $line(@a_lines){
-		my $row = "" ;
-		for my $cell(split "&", $line){
-			$row .= "<td>$cell</td>" ;
-		}
-		$body .= "<tr>$row</tr>\n" ;
+		$body .= parse_table_line("td", $line)
 	}
 	#return "<table>\n$body\n</table>" ;
 	return "<table border=1>\n$body\n</table>" ;
