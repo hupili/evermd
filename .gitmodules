@@ -1,0 +1,9 @@
+[submodule "third/Markdown-CSS"]
+	path = third/Markdown-CSS
+	url = https://github.com/clownfart/Markdown-CSS.git
+[submodule "third/sundown"]
+	path = third/sundown
+	url = https://github.com/vmg/sundown.git
+[submodule "third/redcarpet"]
+	path = third/redcarpet
+	url = https://github.com/vmg/redcarpet.git
