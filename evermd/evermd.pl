@@ -104,6 +104,11 @@ sub parse_attribute{
 	$h_attrs{$a_lines[0]} = $a_lines[1] ;
 	return ""
 }
+
+sub parse_comment{
+	my ($text) = @_ ;
+	return "" ;
+}
 	
 sub parse{
 	my ($marker, $text) = @_ ;
@@ -115,6 +120,8 @@ sub parse{
 		return parse_attribute($text) ;
 	} elsif ($marker eq "var"){
 		return parse_var($text) ;
+	} elsif ($marker eq "comment"){
+		return parse_comment($text) ;
 	} else {
 		die("unknown marker $marker") ;
 	}
