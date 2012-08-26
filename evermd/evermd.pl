@@ -89,8 +89,10 @@ sub parse_var{
 	$text =~ s/\s+$//g ;
 	if ($text eq "now") {
 		return `date` ;
-	}
-	else {
+	} elsif ($text eq "evermd") {
+		return "This document is built by "
+			. "[evermd](https://github.com/hupili/evermd)"
+	} else {
 		die("unkown variable: $text\n") ;
 	}
 }
