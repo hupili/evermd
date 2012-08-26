@@ -129,47 +129,50 @@ sub parse{
 	}
 }
 
-# ========= main ===========
+# To help Tlist find this point
+sub main {
+	open f_med, " | markdown > /dev/stdout" ;
 
-open f_med, " | markdown > /dev/stdout" ;
-
-my $cur_marker = "" ;
-my $cur_text = "" ;
-while (my $line = <STDIN>){
-	if ($line =~ /^\{evermd:(.+):begin\}/) {
-		my $tmp = $1 ;
-		#print STDERR $1 ;
-		if ($cur_marker ne "") {
-			die("evermd marker unpaired(begin)") ;
-		} else {
-			$cur_marker = $tmp ;
-			$cur_text = "" ;
-		}
-		next ;
-	}
-	if ($line =~ /^\{evermd:(.+):end\}/) {
-		my $tmp = $1 ;
-		if ($cur_marker ne $tmp) {
-			die("evermd marker unpaired(end)") ;
-		} else {
-			#print STDERR parse($cur_marker, $cur_text) ;
-			print f_med parse($cur_marker, $cur_text) ;
-			if ($cur_marker ne "attribute"){
-				# Clear remembered attributes after each evermd 
-				# pre-processing section. 
-				%h_attrs = () ;
+	my $cur_marker = "" ;
+	my $cur_text = "" ;
+	while (my $line = <STDIN>){
+		if ($line =~ /^\{evermd:(.+):begin\}/) {
+			my $tmp = $1 ;
+			#print STDERR $1 ;
+			if ($cur_marker ne "") {
+				die("evermd marker unpaired(begin)") ;
+			} else {
+				$cur_marker = $tmp ;
+				$cur_text = "" ;
 			}
-			$cur_marker = "" ;
+			next ;
 		}
-		next ;
+		if ($line =~ /^\{evermd:(.+):end\}/) {
+			my $tmp = $1 ;
+			if ($cur_marker ne $tmp) {
+				die("evermd marker unpaired(end)") ;
+			} else {
+				#print STDERR parse($cur_marker, $cur_text) ;
+				print f_med parse($cur_marker, $cur_text) ;
+				if ($cur_marker ne "attribute"){
+					# Clear remembered attributes after each evermd 
+					# pre-processing section. 
+					%h_attrs = () ;
+				}
+				$cur_marker = "" ;
+			}
+			next ;
+		}
+		if ( $cur_marker ne "" ){
+			$cur_text .= $line ;	
+		} else {
+			print f_med $line ;
+		}
 	}
-	if ( $cur_marker ne "" ){
-		$cur_text .= $line ;	
-	} else {
-		print f_med $line ;
-	}
+	close f_med ;
 }
 
-close f_med ;
+# ==== main ====
+main() ;
 
 exit 0 ;
