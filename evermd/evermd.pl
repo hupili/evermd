@@ -1,6 +1,7 @@
-#!/usr/bin/env perl 
+#!/usr/bin/env perl
 
-use strict ;
+use strict;
+use warnings;
 
 my $ARGC = @ARGV ;
 
