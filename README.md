@@ -35,6 +35,14 @@ To get all the files in this project,
 	git submodule init
 	git submodule update
 
+Suppose you have the markdown source file 'test.md'
+(either in original markdown form or evermd-extened form). 
+Issue the following command:
+
+    cat test.md | ./evermd.pl
+
+You can redirect the stdout to your HTML file, e.g. 'test.html'. 
+
 Reference
 ----
 
