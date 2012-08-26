@@ -39,6 +39,52 @@ Features:
 
    * [http://stackoverflow.com/questions/9721944/automatic-toc-in-github-flavoured-markdown](http://stackoverflow.com/questions/9721944/automatic-toc-in-github-flavoured-markdown)
 
+## Related Stuffs
+
+### Light-weight Markup Language
+
+[http://en.wikipedia.org/wiki/Lightweight_markup_language](http://en.wikipedia.org/wiki/Lightweight_markup_language)
+
+### org-mode 
+
+[http://www.gnu.org/software/emacs/manual/html_node/org/Embedded-LaTeX.html](http://www.gnu.org/software/emacs/manual/html_node/org/Embedded-LaTeX.html)
+
+Pointed from: 
+[http://stackoverflow.com/questions/2188884/how-can-i-mix-latex-in-with-markdown](http://stackoverflow.com/questions/2188884/how-can-i-mix-latex-in-with-markdown)
+
+The table mode is as concise as evermd. 
+
+### Multi Mark Down
+
+A super set of MD:
+
+[http://fletcherpenney.net/multimarkdown/features/](http://fletcherpenney.net/multimarkdown/features/)
+
+### mimetex.cgi
+
+Pointed from: 
+[http://stackoverflow.com/questions/2188884/how-can-i-mix-latex-in-with-markdown](http://stackoverflow.com/questions/2188884/how-can-i-mix-latex-in-with-markdown)
+
+This seems to be HTTP interface to compile formulae to pictures. 
+There are some alternatives to this part, such as wikipedia's formulae compilation. 
+
+People use it to do pre-processing to enable MD's support of formula. 
+
+It is slow. 
+
+### Qute
+
+Official website:
+[http://www.inkcode.net/qute](http://www.inkcode.net/qute)
+
+Github repo:
+[https://github.com/fbreuer/qute-html5](https://github.com/fbreuer/qute-html5)
+
+This editor looks good:
+   * Clean interface. 
+   * Per paragraph preview. 
+   * Amazingly integrate MD and Tex together.. (Tex $$ is supported)
+
 ## For Developers
 
 ### Markdown Test Suites
