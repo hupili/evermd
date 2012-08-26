@@ -80,6 +80,21 @@ sub parse_css{
 	#return qq(<link href="$text" rel="stylesheet" type="text/css"></link>\n)
 }
 
+# evermd defined variables. 
+# One ususally use them to get some environment information. 
+sub parse_var{
+	my ($text) = @_ ;
+	chomp $text ;
+	$text =~ s/^\s+//g ;
+	$text =~ s/\s+$//g ;
+	if ($text eq "now") {
+		return `date` ;
+	}
+	else {
+		die("unkown variable: $text\n") ;
+	}
+}
+
 sub parse_attribute{
 	my ($text) = @_ ;
 	my @a_lines = split "\n", $text ;
@@ -98,6 +113,8 @@ sub parse{
 		return parse_css($text) ;
 	} elsif ($marker eq "attribute"){
 		return parse_attribute($text) ;
+	} elsif ($marker eq "var"){
+		return parse_var($text) ;
 	} else {
 		die("unknown marker $marker") ;
 	}
