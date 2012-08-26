@@ -33,6 +33,12 @@ Features:
    [http://freewisdom.org/projects/python-markdown/Tables](http://freewisdom.org/projects/python-markdown/Tables)
 
 
+## Feature Discussions
+
+### Table of Contents
+
+   * [http://stackoverflow.com/questions/9721944/automatic-toc-in-github-flavoured-markdown](http://stackoverflow.com/questions/9721944/automatic-toc-in-github-flavoured-markdown)
+
 ## For Developers
 
 ### Markdown Test Suites
