@@ -85,6 +85,11 @@ This editor looks good:
    * Per paragraph preview. 
    * Amazingly integrate MD and Tex together.. (Tex $$ is supported)
 
+### HTML 2 Markdown
+
+Project page:
+[http://www.codefu.org/wiki/Main/Html2markdown](http://www.codefu.org/wiki/Main/Html2markdown)
+
 ## For Developers
 
 ### Markdown Test Suites
