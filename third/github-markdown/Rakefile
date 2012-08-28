@@ -1,0 +1,88 @@
+require 'date'
+require 'rake/clean'
+require 'rake/extensiontask'
+require 'digest/md5'
+
+task :default => :test
+
+# ==========================================================
+# Ruby Extension
+# ==========================================================
+
+Rake::ExtensionTask.new('markdown') do |ext|
+  ext.ext_dir = 'ext/markdown'
+  ext.lib_dir = 'lib/github'
+end
+
+# ==========================================================
+# Testing
+# ==========================================================
+
+require 'rake/testtask'
+Rake::TestTask.new('test') do |t|
+  t.test_files = FileList['test/*_test.rb']
+  t.ruby_opts += ['-rubygems'] if defined? Gem
+end
+task 'test' => [:compile]
+
+# PACKAGING =================================================================
+
+require 'rubygems'
+$spec = eval(File.read('github-markdown.gemspec'))
+
+def package(ext='')
+  "pkg/github-markdown-#{$spec.version}" + ext
+end
+
+desc 'Build packages'
+task :package => package('.gem')
+
+directory 'pkg/'
+
+file package('.gem') => %w[pkg/ github-markdown.gemspec] + $spec.files do |f|
+  sh "gem build github-markdown.gemspec"
+  mv File.basename(f.name), f.name
+end
+
+# GEMSPEC HELPERS ==========================================================
+
+task :update_gem do
+  # read spec file and split out manifest section
+  GEMFILE = 'github-markdown.gemspec'
+  spec = File.read(GEMFILE)
+  head, manifest, tail = spec.split("  # = MANIFEST =\n")
+  head.sub!(/\.date = '.*'/, ".date = '#{Date.today.to_s}'")
+  # determine file list from git ls-files
+  files = `git ls-files`.
+    split("\n").
+    sort.
+    reject{ |file| file =~ /^\./ || file =~ /^test\/MarkdownTest/ }.
+    map{ |file| "    #{file}" }.
+    join("\n")
+  # piece file back together and write...
+  manifest = "  s.files = %w[\n#{files}\n  ]\n"
+  spec = [head,manifest,tail].join("  # = MANIFEST =\n")
+  File.open(GEMFILE, 'w') { |io| io.write(spec) }
+  puts "updated #{GEMFILE}"
+end
+
+desc 'Gather required Sundown sources into extension directory'
+task :gather => 'sundown/src/markdown.h' do |t|
+  files =
+    FileList[
+      'sundown/src/{markdown,buffer,stack,autolink,html_blocks}.h',
+      'sundown/src/{markdown,buffer,stack,autolink}.c',
+      'sundown/html/{html,houdini_html_e,houdini_href_e}.c',
+      'sundown/html/{html,houdini}.h',
+      'sundown/plaintext/plaintext.{c,h}',
+    ]
+  cp files, 'ext/markdown/',
+    :preserve => true,
+    :verbose => true
+end
+
+file 'sundown/src/markdown.h' do |t|
+  abort "The Sundown submodule is required."
+end
+
+
