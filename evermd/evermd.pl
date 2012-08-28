@@ -180,15 +180,11 @@ sub parse{
 # To help Tlist find this point
 sub main {
 	my @a_input = read_input() ;
-	#open f_med, " | $_exe_markdown > /dev/stdout" ;
-
-	#exit 0 ;
 
 	my $str_pre = "" ; # the preprocessed result of evermd
 
 	my $cur_marker = "" ;
 	my $cur_text = "" ;
-	#while (my $line = <STDIN>){
 	for my $line(@a_input){
 		if ($line =~ /^\{evermd:(.+):begin\}/) {
 			my $tmp = $1 ;
@@ -206,8 +202,6 @@ sub main {
 			if ($cur_marker ne $tmp) {
 				die("evermd marker unpaired(end)") ;
 			} else {
-				#print STDERR parse($cur_marker, $cur_text) ;
-				#print f_med parse($cur_marker, $cur_text) ;
 				$str_pre .= parse($cur_marker, $cur_text) ; 
 				if ($cur_marker ne "attribute"){
 					# Clear remembered attributes after each evermd 
@@ -221,17 +215,19 @@ sub main {
 		if ( $cur_marker ne "" ){
 			$cur_text .= $line ;	
 		} else {
-			#print f_med $line ;
 			$str_pre .= $line ;
 		}
 	}
-	#close f_med ;
 
-	print $str_pre ;
+	#print $str_pre ;
 	my $str_post = "" ;
+	open f_tmp, "> tmp.evermd.$$" ;
+	print f_tmp $str_pre ;
+	close f_tmp ;
 	#$str_post = `echo "$str_pre" | $_exe_markdown` ;
-	#$str_post = `echo "$str_pre" ` ;
-	#print $str_post ;
+	$str_post = `cat tmp.evermd.$$ | $_exe_markdown` ;
+	`rm tmp.evermd.$$` ;
+	print $str_post ;
 }
 
 # ==== main ====
