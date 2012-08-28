@@ -33,6 +33,16 @@ Features:
    [http://freewisdom.org/projects/python-markdown/Tables](http://freewisdom.org/projects/python-markdown/Tables)
 
 
+### [Ruby Wrapped C] Github-markdown
+   
+This seems the official parser used by github:
+
+[http://rubygems.org/gems/github-markdown](http://rubygems.org/gems/github-markdown)
+
+This one is awesome. It can generate the same output as Github. 
+I also tried their 'redcarpet' project or even the more lower level 'sundown',
+they do not output the expected HTML, especially when many codes are involved. 
+
 ## Feature Discussions
 
 ### Table of Contents
