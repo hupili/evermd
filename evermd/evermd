@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+
+dir_evermd=<<DIR_EVERMD>>
+perl $dir_evermd/evermd.pl $@
+exit $?
