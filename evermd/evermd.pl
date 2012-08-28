@@ -2,8 +2,14 @@
 
 use strict;
 use warnings;
+use FindBin qw($Bin $Script) ;
+my $fn_execute = "$Bin/$Script" ;
+my $dir_execute = $Bin ;
+
+my $_exe_markdown = "$dir_execute/../third/github-markdown/bin/github-markdown.rb" ;
 
 my $ARGC = @ARGV ;
+#print $ARGC ;
 
 # In evermd preprocessing section. 
 # You can specify some additional attributes. 
@@ -21,7 +27,7 @@ sub parse_table_line{
 	my ($type, $line) = @_ ;
 	my $row = "" ;
 
-	$line =~ s/(&+ )([^&]+)/\1\2\n/g ;
+	$line =~ s/(&+ )([^&]+)/$1$2\n/g ;
 	for my $cell(split "\n", $line){
 		if ($cell =~ /(&+ )([^&]*)/){
 			my $col = length($1) - 1 ;
