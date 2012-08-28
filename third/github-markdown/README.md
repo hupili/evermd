@@ -13,3 +13,12 @@ To deploy, run:
 ```
 bash deploy.sh
 ```
+
+You will see three files under "bin":
+   * gfm  : executable from original project
+   * github-markdown.rb : the simple wrapper I adapted from 'markdown.rb'
+   * markdown.so : the binary to perform the real task
+
+You can copy them to other places. 
+Please keep 'github-markdown.rb' and 'markdown.so' in the same folder. 
+
