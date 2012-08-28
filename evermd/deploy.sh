@@ -9,6 +9,6 @@ cur_dir=`echo "$cur_dir" | sed 's/\//\\\\\//g' `
 # The first '\\\\' is for bash, and sed see '\\'.
 #echo `echo sed 's/\//\\\\\//g' `
 echo $cur_dir
-sed -i "s/<<DIR_EVERMD>>/$cur_dir/g" evermd
+sed "s/<<DIR_EVERMD>>/$cur_dir/g" misc/evermd.sample > evermd
 
 exit 0 
