@@ -8,8 +8,49 @@ my $dir_execute = $Bin ;
 
 my $_exe_markdown = "$dir_execute/../third/github-markdown/bin/github-markdown.rb" ;
 
-my $ARGC = @ARGV ;
+our $ARGC = @ARGV ;
 #print $ARGC ;
+our %opt ;
+our $fn_input ;
+
+sub usage {
+	print STDERR << "EOF" ;
+usage: evermd [-t {template}] [-n {marker}] [-o fn_output] [fn_input]
+    -t: Specify the template filename.
+    -n: Specify the marker that evermd should substitute in the 
+        template. When -n is not passed, the default marker evermd 
+        use is "{evermd:template:text}". 
+    -o: Output filename. If not specified, output to STDOUT. 
+    [fn_input]: Input filename. If not specified, input from STDIN. 
+EOF
+	exit ;
+}
+
+sub init{
+	use Getopt::Std;
+	my $opt_string = 'hvdf:';
+	getopts( "$opt_string", \%opt ) or usage();
+	usage() if $opt{h};
+	for my $k(keys %opt){
+		print $k, "\t", $opt{$k} , "\n";	
+	}
+
+	$fn_input = shift @ARGV ;
+	#print $fn_input ;
+	#exit 0 ;
+}
+
+sub read_input {
+	my @tmp ;
+	#print $fn_input ;
+	if (! defined($fn_input) || $fn_input eq "-" ){
+		@tmp = <STDIN> ;	
+	} else {
+		open f_input, "<$fn_input" or die("no such file: $fn_input\n") ;
+		@tmp = <f_input> ;
+	}
+	return @tmp ;
+}
 
 # In evermd preprocessing section. 
 # You can specify some additional attributes. 
@@ -138,11 +179,17 @@ sub parse{
 
 # To help Tlist find this point
 sub main {
-	open f_med, " | $_exe_markdown > /dev/stdout" ;
+	my @a_input = read_input() ;
+	#open f_med, " | $_exe_markdown > /dev/stdout" ;
+
+	#exit 0 ;
+
+	my $str_pre = "" ; # the preprocessed result of evermd
 
 	my $cur_marker = "" ;
 	my $cur_text = "" ;
-	while (my $line = <STDIN>){
+	#while (my $line = <STDIN>){
+	for my $line(@a_input){
 		if ($line =~ /^\{evermd:(.+):begin\}/) {
 			my $tmp = $1 ;
 			#print STDERR $1 ;
@@ -160,7 +207,8 @@ sub main {
 				die("evermd marker unpaired(end)") ;
 			} else {
 				#print STDERR parse($cur_marker, $cur_text) ;
-				print f_med parse($cur_marker, $cur_text) ;
+				#print f_med parse($cur_marker, $cur_text) ;
+				$str_pre .= parse($cur_marker, $cur_text) ; 
 				if ($cur_marker ne "attribute"){
 					# Clear remembered attributes after each evermd 
 					# pre-processing section. 
@@ -173,13 +221,21 @@ sub main {
 		if ( $cur_marker ne "" ){
 			$cur_text .= $line ;	
 		} else {
-			print f_med $line ;
+			#print f_med $line ;
+			$str_pre .= $line ;
 		}
 	}
-	close f_med ;
+	#close f_med ;
+
+	print $str_pre ;
+	my $str_post = "" ;
+	#$str_post = `echo "$str_pre" | $_exe_markdown` ;
+	#$str_post = `echo "$str_pre" ` ;
+	#print $str_post ;
 }
 
 # ==== main ====
+init() ;
 main() ;
 
 exit 0 ;
