@@ -138,7 +138,7 @@ sub parse{
 
 # To help Tlist find this point
 sub main {
-	open f_med, " | markdown > /dev/stdout" ;
+	open f_med, " | $_exe_markdown > /dev/stdout" ;
 
 	my $cur_marker = "" ;
 	my $cur_text = "" ;
