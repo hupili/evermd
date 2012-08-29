@@ -3,6 +3,7 @@
 use strict;
 use warnings;
 use FindBin qw($Bin $Script) ;
+use File::Temp qw(tempfile tempdir) ;
 my $fn_execute = "$Bin/$Script" ;
 my $dir_execute = $Bin ;
 
@@ -52,17 +53,19 @@ sub read_input {
 	return @tmp ;
 }
 
+# returns: ($filehandle, $filename)
 sub open_tmp {
-	my ($suffix) = @_ ;
-	my $fn = "tmp.evermd.$$.$suffix" ;
-	my $fh ;
-	open $fh, ">$fn" or die("can not create tmp: $fn") ;
-	print STDERR "a" ;
-	print $fh "test" ;
-	sleep 10 ;
-	unlink $fn or die("can not unlink tmp: $fn") ;
-	print STDERR "b" ;
-	return $fh ;
+	return tempfile(UNLINK => 1, SUFFIX => "evermd") ;
+	#my ($suffix) = @_ ;
+	#my $fn = "tmp.evermd.$$.$suffix" ;
+	#my $fh ;
+	#open $fh, ">$fn" or die("can not create tmp: $fn") ;
+	#print STDERR "a" ;
+	#print $fh "test" ;
+	#sleep 10 ;
+	#unlink $fn or die("can not unlink tmp: $fn") ;
+	#print STDERR "b" ;
+	#return $fh ;
 }
 
 # In evermd preprocessing section. 
@@ -234,17 +237,17 @@ sub main {
 
 	#print $str_pre ;
 	my $str_post = "" ;
-	my $fh_pre = open_tmp("pre") ;
+	my ($fh_pre, $fn_pre) = open_tmp("pre") ;
 	print $fh_pre $str_pre ;
-	sleep 10 ;
-	print STDERR "c" ;
+	#sleep 10 ;
+	#print STDERR "c" ;
 	#close $fh_pre ;
 	#my $f_tmp ;
 	#open $f_tmp, "> tmp.evermd.$$" ;
 	#print $f_tmp $str_pre ;
 	#close $f_tmp ;
 	#$str_post = `echo "$str_pre" | $_exe_markdown` ;
-	#$str_post = `cat tmp.evermd.$$ | $_exe_markdown` ;
+	$str_post = `cat $fn_pre | $_exe_markdown` ;
 	#`rm tmp.evermd.$$` ;
 	print $str_post ;
 }
