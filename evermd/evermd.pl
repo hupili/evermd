@@ -28,14 +28,19 @@ EOF
 
 sub init{
 	use Getopt::Std;
-	my $opt_string = 'hvdf:';
+	my $opt_string = 't:n:o:hv';
 	getopts( "$opt_string", \%opt ) or usage();
-	usage() if $opt{h};
-	for my $k(keys %opt){
-		print $k, "\t", $opt{$k} , "\n";	
-	}
+	usage() if ($opt{h} or $opt{v});
+
+	#for my $k(keys %opt){
+	#	print $k, "\t", $opt{$k} , "\n";	
+	#}
 
 	$fn_input = shift @ARGV ;
+
+	(!defined($fn_input) || -f $fn_input) or die("input file not exist: $fn_input\n") ;
+	(($opt{t} && $opt{n}) || (! $opt{t} && !$opt{n})) or 
+	   die("option t and n must come together!\n") ;
 }
 
 sub read_input {
