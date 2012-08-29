@@ -22,6 +22,10 @@ usage: evermd [-t {template}] [-n {marker}] [-o fn_output] [fn_input]
         use is "{evermd:template:text}". 
     -o: Output filename. If not specified, output to STDOUT. 
     [fn_input]: Input filename. If not specified, input from STDIN. 
+cautions:
+    -n: This is and PerlRE. e.g. If your marker name is "[% body %]", 
+        Then your CLI should look like:
+            evermd -t {template} -n '\\[%body%\\]'
 EOF
 	exit ;
 }
@@ -35,11 +39,12 @@ sub init{
 	#for my $k(keys %opt){
 	#	print $k, "\t", $opt{$k} , "\n";	
 	#}
+	#print "@ARGV" ;
 
 	$fn_input = shift @ARGV ;
 
 	(!defined($fn_input) || -f $fn_input) or die("input file not exist: $fn_input\n") ;
-	(($opt{t} && $opt{n}) || (! $opt{t} && !$opt{n})) or 
+	((defined($opt{t}) && defined($opt{n})) || (! $opt{t} && !$opt{n})) or 
 	   die("option t and n must come together!\n") ;
 }
 
@@ -227,6 +232,26 @@ sub evermd_pre {
 	return $str_pre ;
 }
 
+# When -t and -n are specified, 
+# embed the MD output to a template. 
+sub evermd_embed {
+	my ($template, $name, $text) = @_ ;
+	#print STDERR $template, "\n" ;
+	#print STDERR $name, "\n" ;
+	my $out = "" ;
+	open(f_temp, "<$template") or die("can not open template: $template") ;
+	while (my $line = <f_temp>){
+		#$out .= $line ;
+		if ( $line =~ /$name/ ){
+			$out .= $text ;	
+		} else {
+			$out .= $line ;
+		}
+	}
+	close f_temp ;
+	return $out ;
+}
+
 sub output {
 	my ($text) = @_ ;
 	if (defined($opt{o})) {
@@ -248,7 +273,11 @@ sub main {
 
 	my $str_post = `cat $fn_pre | $_exe_markdown` ;
 
-	output($str_post) ;
+	if (defined($opt{t}) && defined($opt{n})) {
+		output(evermd_embed($opt{t}, $opt{n}, $str_post)) ;
+	} else { 
+		output($str_post) ;
+	}
 }
 
 # ==== main ====
