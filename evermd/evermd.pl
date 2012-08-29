@@ -40,6 +40,7 @@ sub init{
 	#	print $k, "\t", $opt{$k} , "\n";	
 	#}
 	#print "@ARGV" ;
+	#exit 0 ;
 
 	$fn_input = shift @ARGV ;
 
