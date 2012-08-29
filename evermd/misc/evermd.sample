@@ -1,5 +1,25 @@
-#!/usr/bin/env bash
+#!/usr/bin/env perl
 
-dir_evermd=<<DIR_EVERMD>>
-perl $dir_evermd/evermd.pl $@
-exit $?
+use strict ;
+use warnings ;
+
+my $dir_evermd="<<DIR_EVERMD>>" ;
+my $option = "" ;
+for my $o(@ARGV){
+	#print $o, "\n" ;
+	$option .= qq('$o' ) ;
+}
+
+exec qq($dir_evermd/evermd.pl $option) ;
+
+
+#The following bash does not work generally. 
+#When some options contain blanks, the option 
+#is separated, resulting false parsing of 
+#evermd.pl
+
+##!/usr/bin/env bash
+#
+#dir_evermd=<<DIR_EVERMD>>
+#perl $dir_evermd/evermd.pl $@
+#exit $?
