@@ -43,7 +43,7 @@ sub init{
 	   die("option t and n must come together!\n") ;
 }
 
-sub read_input {
+sub input {
 	my @tmp ;
 	if (! defined($fn_input) || $fn_input eq "-" ){
 		@tmp = <STDIN> ;	
@@ -184,12 +184,11 @@ sub parse{
 	}
 }
 
-# To help Tlist find this point
-sub main {
-	my @a_input = read_input() ;
-
+# input: array of lines
+# output: string of preprocessed MD
+sub evermd_pre {
+	my @a_input = @_ ;
 	my $str_pre = "" ; # the preprocessed result of evermd
-
 	my $cur_marker = "" ;
 	my $cur_text = "" ;
 	for my $line(@a_input){
@@ -225,12 +224,31 @@ sub main {
 			$str_pre .= $line ;
 		}
 	}
+	return $str_pre ;
+}
 
-	my $str_post = "" ;
-	my ($fh_pre, $fn_pre) = open_tmp("pre") ;
+sub output {
+	my ($text) = @_ ;
+	if (defined($opt{o})) {
+		open f_out, ">$opt{o}" ;
+		print f_out $text ;
+		close f_out ;
+	} else {
+		print STDOUT $text ;
+	}
+}
+
+# To help Tlist find this point
+sub main {
+	my $str_pre = evermd_pre(input()) ;
+	#print $str_pre ;
+
+	my ($fh_pre, $fn_pre) = open_tmp() ;
 	print $fh_pre $str_pre ;
-	$str_post = `cat $fn_pre | $_exe_markdown` ;
-	print $str_post ;
+
+	my $str_post = `cat $fn_pre | $_exe_markdown` ;
+
+	output($str_post) ;
 }
 
 # ==== main ====
