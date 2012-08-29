@@ -52,6 +52,19 @@ sub read_input {
 	return @tmp ;
 }
 
+sub open_tmp {
+	my ($suffix) = @_ ;
+	my $fn = "tmp.evermd.$$.$suffix" ;
+	my $fh ;
+	open $fh, ">$fn" or die("can not create tmp: $fn") ;
+	print STDERR "a" ;
+	print $fh "test" ;
+	sleep 10 ;
+	unlink $fn or die("can not unlink tmp: $fn") ;
+	print STDERR "b" ;
+	return $fh ;
+}
+
 # In evermd preprocessing section. 
 # You can specify some additional attributes. 
 # They can be HTML attributes (usual case). 
@@ -221,12 +234,18 @@ sub main {
 
 	#print $str_pre ;
 	my $str_post = "" ;
-	open f_tmp, "> tmp.evermd.$$" ;
-	print f_tmp $str_pre ;
-	close f_tmp ;
+	my $fh_pre = open_tmp("pre") ;
+	print $fh_pre $str_pre ;
+	sleep 10 ;
+	print STDERR "c" ;
+	#close $fh_pre ;
+	#my $f_tmp ;
+	#open $f_tmp, "> tmp.evermd.$$" ;
+	#print $f_tmp $str_pre ;
+	#close $f_tmp ;
 	#$str_post = `echo "$str_pre" | $_exe_markdown` ;
-	$str_post = `cat tmp.evermd.$$ | $_exe_markdown` ;
-	`rm tmp.evermd.$$` ;
+	#$str_post = `cat tmp.evermd.$$ | $_exe_markdown` ;
+	#`rm tmp.evermd.$$` ;
 	print $str_post ;
 }
 
