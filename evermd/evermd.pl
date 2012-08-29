@@ -10,7 +10,6 @@ my $dir_execute = $Bin ;
 my $_exe_markdown = "$dir_execute/../third/github-markdown/bin/github-markdown.rb" ;
 
 our $ARGC = @ARGV ;
-#print $ARGC ;
 our %opt ;
 our $fn_input ;
 
@@ -37,13 +36,10 @@ sub init{
 	}
 
 	$fn_input = shift @ARGV ;
-	#print $fn_input ;
-	#exit 0 ;
 }
 
 sub read_input {
 	my @tmp ;
-	#print $fn_input ;
 	if (! defined($fn_input) || $fn_input eq "-" ){
 		@tmp = <STDIN> ;	
 	} else {
@@ -56,16 +52,6 @@ sub read_input {
 # returns: ($filehandle, $filename)
 sub open_tmp {
 	return tempfile(UNLINK => 1, SUFFIX => "evermd") ;
-	#my ($suffix) = @_ ;
-	#my $fn = "tmp.evermd.$$.$suffix" ;
-	#my $fh ;
-	#open $fh, ">$fn" or die("can not create tmp: $fn") ;
-	#print STDERR "a" ;
-	#print $fh "test" ;
-	#sleep 10 ;
-	#unlink $fn or die("can not unlink tmp: $fn") ;
-	#print STDERR "b" ;
-	#return $fh ;
 }
 
 # In evermd preprocessing section. 
@@ -235,20 +221,10 @@ sub main {
 		}
 	}
 
-	#print $str_pre ;
 	my $str_post = "" ;
 	my ($fh_pre, $fn_pre) = open_tmp("pre") ;
 	print $fh_pre $str_pre ;
-	#sleep 10 ;
-	#print STDERR "c" ;
-	#close $fh_pre ;
-	#my $f_tmp ;
-	#open $f_tmp, "> tmp.evermd.$$" ;
-	#print $f_tmp $str_pre ;
-	#close $f_tmp ;
-	#$str_post = `echo "$str_pre" | $_exe_markdown` ;
 	$str_post = `cat $fn_pre | $_exe_markdown` ;
-	#`rm tmp.evermd.$$` ;
 	print $str_post ;
 }
 
