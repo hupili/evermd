@@ -100,6 +100,13 @@ This editor looks good:
 Project page:
 [http://www.codefu.org/wiki/Main/Html2markdown](http://www.codefu.org/wiki/Main/Html2markdown)
 
+### RST
+
+It is widely adopted in Python community. 
+The sphinx auto documentation tool uses rst. 
+
+[http://docutils.sourceforge.net/rst.html](http://docutils.sourceforge.net/rst.html)
+
 ## For Developers
 
 ### Markdown Test Suites
