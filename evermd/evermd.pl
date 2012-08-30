@@ -255,6 +255,9 @@ sub evermd_embed {
 
 sub output {
 	my ($text) = @_ ;
+
+	$text =~ s/\r\n/\n/g ;
+
 	if (defined($opt{o})) {
 		open f_out, ">$opt{o}" ;
 		print f_out $text ;
