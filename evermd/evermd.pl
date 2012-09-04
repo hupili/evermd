@@ -8,6 +8,7 @@ my $fn_execute = "$Bin/$Script" ;
 my $dir_execute = $Bin ;
 
 my $_exe_markdown = "$dir_execute/../third/github-markdown/bin/github-markdown.rb" ;
+#my $_exe_markdown = "pandoc" ;
 
 our $ARGC = @ARGV ;
 our %opt ;
