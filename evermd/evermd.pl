@@ -154,7 +154,7 @@ sub parse_var{
 		return `date` ;
 	} elsif ($text eq "evermd") {
 		return "This document is built by "
-			. "[evermd](https://github.com/hupili/evermd)"
+			. "[evermd](https://github.com/hupili/evermd)\n"
 	} else {
 		die("unkown variable: $text\n") ;
 	}
@@ -218,8 +218,19 @@ sub evermd_pre {
 	my $str_pre = "" ; # the preprocessed result of evermd
 	my $cur_marker = "" ;
 	my $cur_text = "" ;
+	my $is_in_code_block = 0 ;
 	for my $line(@a_input){
-		# parse formula 
+		# parse code region
+		if ($line =~ /^```/) {
+			$is_in_code_block = ! $is_in_code_block ;
+		}
+		if ($is_in_code_block) {
+			$str_pre .= $line ;
+			next ;
+		}
+		# By evermd convention, evermd marker appears at the 
+		# beginning of each line. So using tab (4 blanks) 
+		# style code block is safe. 
 
 		# parsing 1st version evermd tags
 		if ($line =~ /^\{evermd:(.+):begin\}/) {
