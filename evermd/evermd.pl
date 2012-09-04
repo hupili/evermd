@@ -167,7 +167,6 @@ sub parse_attribute{
 	my @a_lines = split "\n", $text ;
 	chomp $a_lines[0] ;
 	chomp $a_lines[1] ;
-	#print STDERR "@a_lines" ;
 	$h_attrs{$a_lines[0]} = $a_lines[1] ;
 	return ""
 }
@@ -190,7 +189,6 @@ sub parse_formula{
 	} else {
 		return "!formular parse error!" ;	
 	}
-	#return "Here's a formula!" ;
 }
 	
 sub parse{
@@ -226,23 +224,6 @@ sub isolate_formula {
 	} else {
 		return ($line) ;
 	}
-
-	#for my $line(@a_input){
-	#	while ($line =~ /^(.*)(\$.+?\$)(.*)$/g){
-	#		print STDERR "match:$2\n" ;
-	#		if ($1) {
-	#			push @tmp, $1 ;	
-	#		}
-	#		push @tmp, $2 ;
-	#		$line = $3 ;
-	#	}	
-	#	push @tmp, $line ;
-	#}
-	#print join("\n", @tmp) ;
-	#print STDERR join("||", @tmp) ;
-	##print STDERR "~~~~\n" ;
-	##exit 0 ;
-	#return @tmp ;
 }
 
 sub parse_inline_formula {
