@@ -183,8 +183,13 @@ sub parse_formula{
 	my $fn = md5_hex($text) ;
 	$fn = "$fn.png" ;
 	my $path = $fn ;
-	system qq($_exe_transformula $text $path) ;
-	return "![$fn]($path)" ;
+	my $url = $fn ;
+	my $ret = system qq($_exe_transformula $text $path) ;
+	if ($ret == 0) {
+		return "![$fn]($url)" ;
+	} else {
+		return "!formular parse error!" ;	
+	}
 	#return "Here's a formula!" ;
 }
 	

@@ -18,6 +18,10 @@ fi
 #   ./transformula.sh '\left\lbrace\begin{matrix}a&a\\b&d\end{matrix}\right.' test.png
 url="http://www.codecogs.com/png.latex?$formula"
 
-wget -O $output "$url"
+if [[ ! -e $output ]]; then
+	wget --quiet -O $output "$url"
+	exit $?
+else
+	exit 0 
+fi
 
-exit 0 
