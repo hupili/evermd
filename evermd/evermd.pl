@@ -238,6 +238,26 @@ sub isolate_formula {
 	#return @tmp ;
 }
 
+sub parse_inline_formula {
+	my ($line) = @_ ;
+	my @tmp = () ;
+	chomp ($line) ;
+	for my $part(isolate_formula($line)){
+		#print STDERR "part:$part\n" ; 
+		if ($part =~ /\$(.+)\$/) {
+			push @tmp, parse("formula", $1) ;
+			#print STDERR "parse formula: $1\n" ;
+		} else {
+			push @tmp, $part ;
+			#print STDERR "direct push\n" ;
+		}
+	}
+	$line = join("", @tmp) ;
+	$line .= "\n" ;
+	return $line ;
+}
+
+
 # input: array of lines
 # output: string of preprocessed MD
 sub evermd_pre {
@@ -259,21 +279,7 @@ sub evermd_pre {
 		# beginning of each line. So using tab (4 blanks) 
 		# style code block is safe. 
 
-		# parse inline formula
-		my @tmp = () ;
-		chomp ($line) ;
-		for my $part(isolate_formula($line)){
-			print STDERR "part:$part\n" ; 
-			if ($part =~ /\$(.+)\$/) {
-				push @tmp, parse("formula", $1) ;
-				#print STDERR "parse formula: $1\n" ;
-			} else {
-				push @tmp, $part ;
-				#print STDERR "direct push\n" ;
-			}
-		}
-		$line = join("", @tmp) ;
-		$line .= "\n" ;
+		$line = parse_inline_formula($line) ;
 
 		# parsing 1st version evermd tags
 		if ($line =~ /^\{evermd:(.+):begin\}/) {
