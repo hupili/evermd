@@ -19,11 +19,13 @@ our $fn_input ;
 
 sub usage {
 	print STDERR << "EOF" ;
-usage: evermd [-t {template}] [-n {marker}] [-o fn_output] [fn_input]
-    -t: Specify the template filename.
-    -n: Specify the marker that evermd should substitute in the 
+usage: evermd [-tnsd] [-o fn_output] [fn_input]
+    -t {template}: Specify the template filename.
+    -n {marker}: Specify the marker that evermd should substitute in the 
         template. When -n is not passed, the default marker evermd 
         use is "{evermd:template:text}". 
+    -s {src_format}: Format of input. Default: MarkDown. 
+    -d {dst_format}: Format of output. Default: HTML. 
     -o: Output filename. If not specified, output to STDOUT. 
     [fn_input]: Input filename. If not specified, input from STDIN. 
 cautions:
@@ -48,9 +50,19 @@ sub init{
 
 	$fn_input = shift @ARGV ;
 
+	# Option validation
+
 	(!defined($fn_input) || -f $fn_input) or die("input file not exist: $fn_input\n") ;
 	((defined($opt{t}) && defined($opt{n})) || (! $opt{t} && !$opt{n})) or 
 	   die("option t and n must come together!\n") ;
+
+	# Default options
+	if (!defined($opt{s})){
+		$opt{s} = "markdown" ;
+	}
+	if (!defined($opt{d})){
+		$opt{d} = "html" ;
+	}
 }
 
 sub input {
