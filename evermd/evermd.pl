@@ -3,9 +3,11 @@
 use strict;
 use warnings;
 use FindBin qw($Bin $Script) ;
-use File::Temp qw(tempfile tempdir) ;
 my $fn_execute = "$Bin/$Script" ;
 my $dir_execute = $Bin ;
+use File::Temp qw(tempfile tempdir) ;
+use URI::Escape ;
+use Digest::MD5 qw(md5 md5_hex md5_base64) ;
 
 my $_exe_markdown = "$dir_execute/../third/github-markdown/bin/github-markdown.rb" ;
 #my $_exe_markdown = "pandoc" ;
@@ -177,7 +179,13 @@ sub parse_comment{
 
 sub parse_formula{
 	my ($text) = @_ ;
-	return "Here's a formula!" ;
+	$text = uri_escape($text) ;
+	my $fn = md5_hex($text) ;
+	$fn = "$fn.png" ;
+	my $path = $fn ;
+	#system qq($_exe_transformula $text $path) ;
+	return "![$fn]($path)" ;
+	#return "Here's a formula!" ;
 }
 	
 sub parse{
@@ -199,23 +207,35 @@ sub parse{
 	}
 }
 
+# input: a single line string
+# output: an array, each formula is on an individual line
 sub isolate_formula {
-	my @a_input = @_ ;
-	my @tmp = () ;
-	for my $line(@a_input){
-		while ($line =~ /^(.*)(\$.+?\$)(.*)$/){
-			if ($1) {
-				push @tmp, $1 ;	
-			}
-			push @tmp, $2 ;
-			$line = $3 ;
-		}	
-		push @tmp, $line ;
+	my ($line) = @_ ;
+	#my @tmp = () ;
+	if ( $line =~ /(\$.+?\$)/ ){
+		$line =~ s/(\$.+?\$)/evermd-formula-marker$1evermd-formula-marker/g ;
+		#@tmp = split "evermd-formula-marker", $line; 
+		return split "evermd-formula-marker", $line; 
+	} else {
+		return ($line) ;
 	}
+
+	#for my $line(@a_input){
+	#	while ($line =~ /^(.*)(\$.+?\$)(.*)$/g){
+	#		print STDERR "match:$2\n" ;
+	#		if ($1) {
+	#			push @tmp, $1 ;	
+	#		}
+	#		push @tmp, $2 ;
+	#		$line = $3 ;
+	#	}	
+	#	push @tmp, $line ;
+	#}
 	#print join("\n", @tmp) ;
 	#print STDERR join("||", @tmp) ;
-	#exit 0 ;
-	return @tmp ;
+	##print STDERR "~~~~\n" ;
+	##exit 0 ;
+	#return @tmp ;
 }
 
 # input: array of lines
@@ -241,14 +261,19 @@ sub evermd_pre {
 
 		# parse inline formula
 		my @tmp = () ;
+		chomp ($line) ;
 		for my $part(isolate_formula($line)){
+			print STDERR "part:$part\n" ; 
 			if ($part =~ /\$(.+)\$/) {
 				push @tmp, parse("formula", $1) ;
+				#print STDERR "parse formula: $1\n" ;
 			} else {
 				push @tmp, $part ;
+				#print STDERR "direct push\n" ;
 			}
 		}
 		$line = join("", @tmp) ;
+		$line .= "\n" ;
 
 		# parsing 1st version evermd tags
 		if ($line =~ /^\{evermd:(.+):begin\}/) {
@@ -328,6 +353,8 @@ sub main {
 
 	my ($fh_pre, $fn_pre) = open_tmp() ;
 	print $fh_pre $str_pre ;
+
+	#print STDERR $str_pre ;
 
 	my $str_post = `cat $fn_pre | $_exe_markdown` ;
 
