@@ -174,6 +174,11 @@ sub parse_comment{
 	my ($text) = @_ ;
 	return "" ;
 }
+
+sub parse_formula{
+	my ($text) = @_ ;
+	return "Here's a formula!" ;
+}
 	
 sub parse{
 	my ($marker, $text) = @_ ;
@@ -187,6 +192,8 @@ sub parse{
 		return parse_var($text) ;
 	} elsif ($marker eq "comment"){
 		return parse_comment($text) ;
+	} elsif ($marker eq "formula"){
+		return parse_formula($text) ;
 	} else {
 		die("unknown marker $marker") ;
 	}
@@ -206,7 +213,7 @@ sub isolate_formula {
 		push @tmp, $line ;
 	}
 	#print join("\n", @tmp) ;
-	#print join("\n", @tmp) ;
+	#print STDERR join("||", @tmp) ;
 	#exit 0 ;
 	return @tmp ;
 }
@@ -231,6 +238,17 @@ sub evermd_pre {
 		# By evermd convention, evermd marker appears at the 
 		# beginning of each line. So using tab (4 blanks) 
 		# style code block is safe. 
+
+		# parse inline formula
+		my @tmp = () ;
+		for my $part(isolate_formula($line)){
+			if ($part =~ /\$(.+)\$/) {
+				push @tmp, parse("formula", $1) ;
+			} else {
+				push @tmp, $part ;
+			}
+		}
+		$line = join("", @tmp) ;
 
 		# parsing 1st version evermd tags
 		if ($line =~ /^\{evermd:(.+):begin\}/) {
