@@ -9,6 +9,7 @@ my $dir_execute = $Bin ;
 
 my $_exe_markdown = "$dir_execute/../third/github-markdown/bin/github-markdown.rb" ;
 #my $_exe_markdown = "pandoc" ;
+my $_exe_transformula = "$dir_execute/transformula.sh" ;
 
 our $ARGC = @ARGV ;
 our %opt ;
@@ -191,6 +192,25 @@ sub parse{
 	}
 }
 
+sub isolate_formula {
+	my @a_input = @_ ;
+	my @tmp = () ;
+	for my $line(@a_input){
+		while ($line =~ /^(.*)(\$.+?\$)(.*)$/){
+			if ($1) {
+				push @tmp, $1 ;	
+			}
+			push @tmp, $2 ;
+			$line = $3 ;
+		}	
+		push @tmp, $line ;
+	}
+	#print join("\n", @tmp) ;
+	#print join("\n", @tmp) ;
+	#exit 0 ;
+	return @tmp ;
+}
+
 # input: array of lines
 # output: string of preprocessed MD
 sub evermd_pre {
@@ -199,6 +219,9 @@ sub evermd_pre {
 	my $cur_marker = "" ;
 	my $cur_text = "" ;
 	for my $line(@a_input){
+		# parse formula 
+
+		# parsing 1st version evermd tags
 		if ($line =~ /^\{evermd:(.+):begin\}/) {
 			my $tmp = $1 ;
 			#print STDERR $1 ;
@@ -271,6 +294,7 @@ sub output {
 # To help Tlist find this point
 sub main {
 	my $str_pre = evermd_pre(input()) ;
+	#my $str_pre = evermd_pre(isolate_formula(input())) ;
 	#print $str_pre ;
 
 	my ($fh_pre, $fn_pre) = open_tmp() ;
