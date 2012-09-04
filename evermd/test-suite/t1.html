@@ -1,0 +1,127 @@
+<h1>evermd Test Suite</h1>
+
+<h2>Basic of MD</h2>
+
+<h3>Line Wrap</h3>
+
+<p>The following dots are on separate lines in source:
+.
+.
+.
+.
+.
+.
+However, in the output, they should be on a single line. </p>
+
+<h3>Code</h3>
+
+<p>Code embedding: input() of evermd.pl</p>
+
+<pre><code>sub input {
+    my @tmp ;
+    if (! defined($fn_input) || $fn_input eq &quot;-&quot; ){
+        @tmp = &lt;STDIN&gt; ;    
+    } else {
+        open f_input, &quot;&lt;$fn_input&quot; or die(&quot;no such file: $fn_input\n&quot;) ;
+        @tmp = &lt;f_input&gt; ;
+    }
+    return @tmp ;
+}
+</code></pre>
+
+<p>Inline code test. 
+You can use <code>evermd {doc}</code> command to convert an 
+evermd compliant document into HTML. </p>
+
+<h3>Reference</h3>
+
+<blockquote>
+<p>This is one reference
+which spans multiple lines in source code. 
+It is supposed to be wrapped in the output file. </p>
+
+<blockquote>
+<p>Here is the 2nd order reference. </p>
+
+<blockquote>
+<p>3rd order.. </p>
+</blockquote>
+
+<p>Back to 2nd order. </p>
+</blockquote>
+</blockquote>
+
+<h3>List</h3>
+
+<p>evermd does support ordered list but it is not recommended. 
+There may be some rendering problems due to 
+the integration of different tools. </p>
+
+<p>The general guideline:</p>
+
+<ul>
+<li>Use unordered list by convention. </li>
+<li>Leave a blank line before and after each list. </li>
+</ul>
+
+<h3>URL and Image</h3>
+
+<p>This project is <a href="http://unlicense.org/">unlicensed</a>.</p>
+
+<p>Here&#39;s the unlicensed symbol: 
+<img src="http://unlicense.org/pd-icon.png" alt="ul"></p>
+
+<p>Here&#39;s the unlicensed symbol referenced using relative path:
+<img src="pd-icon.png" alt="ul"></p>
+
+<h2>evermd</h2>
+
+<h3>Table</h3>
+
+<p>General info of evermd:</p>
+
+<table border=1 >
+<tr><td >Author </td><td >HU, Pili</td></tr>
+<tr><td >Start Time </td><td >Aug, 2012</td></tr>
+<tr><td >Repo </td><td >https://github.com/hupili/evermd</td></tr>
+
+</table>
+
+<p>A more weird table:</p>
+
+<table border=1 >
+<tr><td >- </td><td >- </td><td >-</td></tr>
+<tr><td colspan=2>- </td><td >-  </td></tr>
+<tr><td >- </td><td colspan=2>-</td></tr>
+
+</table>
+
+<p>You see, it every easy to construct tables 
+with columns spanning multiple cells. </p>
+
+<h3>Attribute</h3>
+
+<p>Let&#39;s center the table shown in previous sections
+and color it red:</p>
+
+<table border=1 style="text-align: center; color: #ff0000;">
+<tr><td >Author </td><td >HU, Pili</td></tr>
+<tr><td >Start Time </td><td >Aug, 2012</td></tr>
+<tr><td >Repo </td><td >https://github.com/hupili/evermd</td></tr>
+
+</table>
+
+<h3>Comment</h3>
+
+<p>You should see nothing between &quot;a&quot; and &quot;b&quot;. </p>
+
+<p>a</p>
+
+<p>b</p>
+
+<h3>Var</h3>
+
+<p>This document is last built at:
+Tue Sep  4 15:11:49 HKT 2012</p>
+
+<p>This document is built by <a href="https://github.com/hupili/evermd">evermd</a></p>
