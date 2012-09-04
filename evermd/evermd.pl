@@ -183,7 +183,7 @@ sub parse_formula{
 	my $fn = md5_hex($text) ;
 	$fn = "$fn.png" ;
 	my $path = $fn ;
-	#system qq($_exe_transformula $text $path) ;
+	system qq($_exe_transformula $text $path) ;
 	return "![$fn]($path)" ;
 	#return "Here's a formula!" ;
 }
@@ -202,6 +202,8 @@ sub parse{
 		return parse_comment($text) ;
 	} elsif ($marker eq "formula"){
 		return parse_formula($text) ;
+	} elsif ($marker eq "bformula"){
+		return "\n" . parse("formula", $text) . "\n";
 	} else {
 		die("unknown marker $marker") ;
 	}
@@ -266,6 +268,7 @@ sub evermd_pre {
 	my $cur_marker = "" ;
 	my $cur_text = "" ;
 	my $is_in_code_block = 0 ;
+	my $is_in_formula_block = 0 ;
 	for my $line(@a_input){
 		# parse code region
 		if ($line =~ /^```/) {
@@ -278,6 +281,15 @@ sub evermd_pre {
 		# By evermd convention, evermd marker appears at the 
 		# beginning of each line. So using tab (4 blanks) 
 		# style code block is safe. 
+
+		if ($line =~ /^\$\$/) {
+			$is_in_formula_block = ! $is_in_formula_block ;
+			if ($is_in_formula_block){
+				$line = "{evermd:bformula:begin}" ;
+			} else {
+				$line = "{evermd:bformula:end}" ;
+			}
+		}
 
 		$line = parse_inline_formula($line) ;
 
