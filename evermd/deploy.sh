@@ -11,4 +11,6 @@ cur_dir=`echo "$cur_dir" | sed 's/\//\\\\\//g' `
 echo $cur_dir
 sed "s/<<DIR_EVERMD>>/$cur_dir/g" misc/evermd.sample > evermd
 
+chmod u+x evermd
+
 exit 0 
