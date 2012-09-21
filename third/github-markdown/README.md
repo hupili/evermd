@@ -22,3 +22,14 @@ You will see three files under "bin":
 You can copy them to other places. 
 Please keep 'github-markdown.rb' and 'markdown.so' in the same folder. 
 
+## Troubleshooting
+
+### "can't find header files for ruby."
+
+You may want to install the development package of ruby. Usually the name "ruby-devel" or "ruby-dev". 
+
+e.g. 
+
+```
+yum install ruby-devel
+```
