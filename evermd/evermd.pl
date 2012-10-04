@@ -164,10 +164,12 @@ sub parse_var{
 			. "[evermd](https://github.com/hupili/evermd)\n" ;
 	} elsif ($text eq "toc") {
 		my $tmp = "" ;
-		for my $h(@headings){
-			$tmp .= "$h\n" ;
+		for my $he(@headings){
+			my $h = $he->{heading} ;
+			my $id = $he->{id} ;
+			$tmp .= "   * [$h](#$id)\n" ;
 		}
-		$tmp = "```\nTOC:\n$tmp```" ;
+		$tmp = qq(\n<a id="__toc__"></a>TOC:\n$tmp) ;
 		return $tmp ;
 	} else {
 		die("unkown variable: $text\n") ;
@@ -349,17 +351,30 @@ sub evermd_embed {
 	return $out ;
 }
 
+sub heading_name2id {
+	my ($name) = @_ ;
+	$name =~ s/\s/_/g ;
+	$name =~ s/\./_/g ;
+	return $name
+}
+
+# 1. extract headings for later making TOC
+# 2. put book mark tags before headings
 sub evermd_get_headings {
 	my @in = @_ ;
-	my @tmp = () ;
+	my @out = () ;
+	@headings = () ;
 	for my $line(@in){
 		if ($line =~ /^\s*#(.+)$/ ){
 			my $h = $1 ;
-			$h =~ s/#/  /g ;
-			push @tmp, $h ;
-		}
+			$h =~ s/#/../g ;
+			my $id = heading_name2id($h) ;
+			push @headings, {heading=>$h, id=>$id} ;
+			push @out, qq(\n<a id="$id"></a>\n) ;
+		} 
+		push @out, $line ;
 	}
-	return @tmp ;
+	return @out ;
 }
 
 sub output {
@@ -379,7 +394,7 @@ sub output {
 # To help Tlist find this point
 sub main {
 	my @in = input() ;
-	@headings = evermd_get_headings(@in) ;
+	@in = evermd_get_headings(@in) ;
 	my $str_pre = evermd_pre(@in) ;
 	#my $str_pre = evermd_pre(isolate_formula(input())) ;
 	#print $str_pre ;
