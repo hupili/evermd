@@ -16,6 +16,7 @@ my $_exe_transformula = "$dir_execute/transformula.sh" ;
 our $ARGC = @ARGV ;
 our %opt ;
 our $fn_input ;
+our @headings = () ;
 
 sub usage {
 	print STDERR << "EOF" ;
@@ -160,7 +161,14 @@ sub parse_var{
 		return `date` ;
 	} elsif ($text eq "evermd") {
 		return "This document is built by "
-			. "[evermd](https://github.com/hupili/evermd)\n"
+			. "[evermd](https://github.com/hupili/evermd)\n" ;
+	} elsif ($text eq "toc") {
+		my $tmp = "" ;
+		for my $h(@headings){
+			$tmp .= "$h\n" ;
+		}
+		$tmp = "```\nTOC:\n$tmp```" ;
+		return $tmp ;
 	} else {
 		die("unkown variable: $text\n") ;
 	}
@@ -311,8 +319,10 @@ sub evermd_pre {
 			next ;
 		}
 		if ( $cur_marker ne "" ){
+			# inside evermd marker
 			$cur_text .= $line ;	
 		} else {
+			# normal text (MD standard)
 			$str_pre .= $line ;
 		}
 	}
@@ -339,6 +349,19 @@ sub evermd_embed {
 	return $out ;
 }
 
+sub evermd_get_headings {
+	my @in = @_ ;
+	my @tmp = () ;
+	for my $line(@in){
+		if ($line =~ /^\s*#(.+)$/ ){
+			my $h = $1 ;
+			$h =~ s/#/  /g ;
+			push @tmp, $h ;
+		}
+	}
+	return @tmp ;
+}
+
 sub output {
 	my ($text) = @_ ;
 
@@ -355,7 +378,9 @@ sub output {
 
 # To help Tlist find this point
 sub main {
-	my $str_pre = evermd_pre(input()) ;
+	my @in = input() ;
+	@headings = evermd_get_headings(@in) ;
+	my $str_pre = evermd_pre(@in) ;
 	#my $str_pre = evermd_pre(isolate_formula(input())) ;
 	#print $str_pre ;
 
