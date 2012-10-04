@@ -167,7 +167,9 @@ sub parse_var{
 		for my $he(@headings){
 			my $h = $he->{heading} ;
 			my $id = $he->{id} ;
-			$tmp .= "   * [$h](#$id)\n" ;
+			my $l = $he->{level} ;
+			my $sp = " " x ($l * 3) ;
+			$tmp .= "$sp* [$h](#$id)\n" ;
 		}
 		$tmp = qq(\n<a id="__toc__"></a>TOC:\n$tmp) ;
 		return $tmp ;
@@ -365,12 +367,17 @@ sub evermd_get_headings {
 	my @out = () ;
 	@headings = () ;
 	for my $line(@in){
-		if ($line =~ /^\s*#(.+)$/ ){
-			my $h = $1 ;
-			$h =~ s/#/../g ;
-			my $id = heading_name2id($h) ;
-			push @headings, {heading=>$h, id=>$id} ;
-			push @out, qq(\n<a id="$id"></a>\n) ;
+		if ($line =~ /^\s*(#+) (.+)$/ ){
+			my $hash = $1 ;
+			my $h = $2 ;
+			my $level = length($hash) ;
+			$level -- ;
+			if ( $level > 0 ) {
+				$h =~ s/#//g ;
+				my $id = heading_name2id($h) ;
+				push @headings, {heading=>$h, id=>$id, level=>$level} ;
+				push @out, qq(\n<a id="$id"></a>\n) ;
+			}
 		} 
 		push @out, $line ;
 	}
