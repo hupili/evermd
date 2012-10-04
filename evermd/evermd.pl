@@ -34,6 +34,10 @@ EOF
 	exit ;
 }
 
+
+our $_dir_eq = "_eq" ;
+`mkdir -p $_dir_eq` ;
+
 sub init{
 	use Getopt::Std;
 	my $opt_string = 't:n:o:hv';
@@ -180,7 +184,7 @@ sub parse_formula{
 	my ($text) = @_ ;
 	$text = uri_escape($text) ;
 	my $fn = md5_hex($text) ;
-	$fn = "$fn.png" ;
+	$fn = "$_dir_eq/$fn.png" ;
 	my $path = $fn ;
 	my $url = $fn ;
 	my $ret = system qq($_exe_transformula $text $path) ;
