@@ -172,6 +172,7 @@ sub parse_var{
 			$tmp .= "$sp* [$h](#$id)\n" ;
 		}
 		$tmp = qq(\n<a id="__toc__"></a>TOC:\n$tmp) ;
+		#print STDERR $tmp; 
 		return $tmp ;
 	} else {
 		die("unkown variable: $text\n") ;
@@ -356,8 +357,14 @@ sub evermd_embed {
 sub heading_name2id {
 	my ($name) = @_ ;
 	$name =~ s/\s/_/g ;
-	$name =~ s/\./_/g ;
+	$name =~ s/[\.\[\]\(\)]/_/g ;
 	return $name
+}
+
+sub heading_filter_name {
+	my ($name) = @_ ;
+	$name =~ s/[\[\]]/_/g ;
+	return $name ;
 }
 
 # 1. extract headings for later making TOC
@@ -374,6 +381,7 @@ sub evermd_get_headings {
 			$level -- ;
 			if ( $level > 0 ) {
 				$h =~ s/#//g ;
+				$h = heading_filter_name($h) ;
 				my $id = heading_name2id($h) ;
 				push @headings, {heading=>$h, id=>$id, level=>$level} ;
 				push @out, qq(\n<a id="$id"></a>\n) ;
