@@ -373,6 +373,7 @@ sub evermd_get_headings {
 	my @in = @_ ;
 	my @out = () ;
 	@headings = () ;
+	my $counter = 0 ;
 	for my $line(@in){
 		if ($line =~ /^\s*(#+) (.+)$/ ){
 			my $hash = $1 ;
@@ -380,9 +381,11 @@ sub evermd_get_headings {
 			my $level = length($hash) ;
 			$level -- ;
 			if ( $level > 0 ) {
+				$counter ++ ;
 				$h =~ s/#//g ;
 				$h = heading_filter_name($h) ;
 				my $id = heading_name2id($h) ;
+				$id = "h${counter}_$id" ; #solve heading repitition problem
 				push @headings, {heading=>$h, id=>$id, level=>$level} ;
 				push @out, qq(\n<a id="$id"></a>\n) ;
 			}
