@@ -35,9 +35,7 @@ EOF
 	exit ;
 }
 
-
 our $_dir_eq = "_eq" ;
-`mkdir -p $_dir_eq` ;
 
 sub init{
 	use Getopt::Std;
@@ -56,6 +54,13 @@ sub init{
 	(!defined($fn_input) || -f $fn_input) or die("input file not exist: $fn_input\n") ;
 	((defined($opt{t}) && defined($opt{n})) || (! $opt{t} && !$opt{n})) or 
 	   die("option t and n must come together!\n") ;
+
+	if (defined($fn_input)) {
+		my $_dir = `dirname $fn_input` ;
+		chomp($_dir) ;
+		$_dir_eq = "$_dir/$_dir_eq" ;
+	}
+	`mkdir -p $_dir_eq` ;
 }
 
 sub input {
