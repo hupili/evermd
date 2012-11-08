@@ -362,13 +362,15 @@ sub evermd_embed {
 sub heading_name2id {
 	my ($name) = @_ ;
 	$name =~ s/\s/_/g ;
-	$name =~ s/[\.\[\]\(\)]/_/g ;
+	$name =~ s/[\.\[\]\(\)"',:;-]\//_/g ;
 	return $name
 }
 
 sub heading_filter_name {
 	my ($name) = @_ ;
-	$name =~ s/[\[\]]/_/g ;
+	#$name =~ s/[\[\]]/ /g ;
+	$name =~ s/[\[\]\(\)]/ /g ;
+	#$name =~ s/[\[\]\(\)]/_/g ;
 	return $name ;
 }
 
