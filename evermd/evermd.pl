@@ -201,8 +201,8 @@ sub parse_comment{
 	return "" ;
 }
 
-sub parse_formula{
-	my ($text) = @_ ;
+sub _parse_formula{
+	my ($text, $inline) = @_ ;
 	if (! defined $opt{m}){
 		# Use '_exe_transformula' as the backend to convert equation into images. 
 		$text = uri_escape($text) ;
@@ -225,9 +225,20 @@ sub parse_formula{
 		# back. 
 		my $di = md5_hex($text) ;
 		my $mk = "<pre>evermd-eqn-$di</pre>" ;
-		$h_eqns{$mk} = $text ;
+		$h_eqns{$mk}->{text} = $text ;
+		$h_eqns{$mk}->{inline} = $inline ;
 		return $mk ;
 	}
+}
+
+sub parse_formula{
+	my ($text) = @_ ;
+	return _parse_formula($text, 0) ;
+}
+
+sub parse_iformula {
+	my ($text) = @_ ;
+	return _parse_formula($text, 1) ;
 }
 	
 sub parse{
@@ -244,6 +255,8 @@ sub parse{
 		return parse_comment($text) ;
 	} elsif ($marker eq "formula"){
 		return parse_formula($text) ;
+	} elsif ($marker eq "iformula"){
+		return parse_iformula($text) ;
 	} elsif ($marker eq "bformula"){
 		return "\n" . parse("formula", $text) . "\n";
 	} else {
@@ -272,7 +285,7 @@ sub parse_inline_formula {
 	for my $part(isolate_formula($line)){
 		#print STDERR "part:$part\n" ; 
 		if ($part =~ /\$(.+)\$/) {
-			push @tmp, parse("formula", $1) ;
+			push @tmp, parse("iformula", $1) ;
 			#print STDERR "parse formula: $1\n" ;
 		} else {
 			push @tmp, $part ;
@@ -392,9 +405,14 @@ sub evermd_post {
 		# Substitute equation back
 		for my $mk(keys %h_eqns){
 			#my $e = quotemeta ($h_eqns{$mk}) ;
-			my $e = $h_eqns{$mk} ;
+			my $e = $h_eqns{$mk}->{text} ;
+			my $i = $h_eqns{$mk}->{inline} ;
 			#print STDERR $e, "\n" ;
-			$text =~ s/$mk/\$$e\$/g ;
+			if ($i){
+				$text =~ s/$mk/\$$e\$/g ;
+			} else {
+				$text =~ s/$mk/\$\$$e\$\$/g ;
+			}
 		}
 		my $mathjax_preamble = << 'EOF' ;
 <script type="text/x-mathjax-config">
