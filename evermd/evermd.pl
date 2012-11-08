@@ -17,16 +17,30 @@ our $ARGC = @ARGV ;
 our %opt ;
 our $fn_input ;
 our @headings = () ;
+our $_dir_eq = "_eq" ;
+# In evermd preprocessing section. 
+# You can specify some additional attributes. 
+# They can be HTML attributes (usual case). 
+# Or they can be something evernote understands. 
+# How to interpret the attributes depends on 
+# evermd implementation. It's suggested not to 
+# use them since both markdown and evermd 
+# intends to introduce a super simple syntax. 
+# This extension only leaves a backup for 
+# functions people may think important. 
+our %h_attrs = () ;
+our %h_eqns = () ;
 
 sub usage {
 	print STDERR << "EOF" ;
-usage: evermd [-t {template}] [-n {marker}] [-o fn_output] [fn_input]
+usage: evermd [-t {template}] [-n {marker}] [-o fn_output] [-m] [fn_input]
     -t: Specify the template filename.
     -n: Specify the marker that evermd should substitute in the 
         template. When -n is not passed, the default marker evermd 
         use is "{evermd:template:text}". 
     -o: Output filename. If not specified, output to STDOUT. 
     [fn_input]: Input filename. If not specified, input from STDIN. 
+    -m: Use MathJax as the rendering engine. 
 cautions:
     -n: This is and PerlRE. e.g. If your marker name is "[% body %]", 
         Then your CLI should look like:
@@ -35,11 +49,10 @@ EOF
 	exit ;
 }
 
-our $_dir_eq = "_eq" ;
 
 sub init{
 	use Getopt::Std;
-	my $opt_string = 't:n:o:hv';
+	my $opt_string = 'mt:n:o:hv';
 	getopts( "$opt_string", \%opt ) or usage();
 	usage() if ($opt{h} or $opt{v});
 
@@ -60,7 +73,9 @@ sub init{
 		chomp($_dir) ;
 		$_dir_eq = "$_dir/$_dir_eq" ;
 	}
-	`mkdir -p $_dir_eq` ;
+	
+	# If not using Mathjax, we need a subfolder to store equations as images. 
+	$opt{m} or `mkdir -p $_dir_eq` ;
 }
 
 sub input {
@@ -78,18 +93,6 @@ sub input {
 sub open_tmp {
 	return tempfile(UNLINK => 1, SUFFIX => "evermd") ;
 }
-
-# In evermd preprocessing section. 
-# You can specify some additional attributes. 
-# They can be HTML attributes (usual case). 
-# Or they can be something evernote understands. 
-# How to interpret the attributes depends on 
-# evermd implementation. It's suggested not to 
-# use them since both markdown and evermd 
-# intends to introduce a super simple syntax. 
-# This extension only leaves a backup for 
-# functions people may think important. 
-our %h_attrs = () ;
 
 sub parse_table_line{
 	my ($type, $line) = @_ ;
@@ -200,16 +203,30 @@ sub parse_comment{
 
 sub parse_formula{
 	my ($text) = @_ ;
-	$text = uri_escape($text) ;
-	my $fn = md5_hex($text) ;
-	$fn = "$_dir_eq/$fn.png" ;
-	my $path = $fn ;
-	my $url = $fn ;
-	my $ret = system qq($_exe_transformula $text $path) ;
-	if ($ret == 0) {
-		return "![$fn]($url)" ;
+	if (! defined $opt{m}){
+		# Use '_exe_transformula' as the backend to convert equation into images. 
+		$text = uri_escape($text) ;
+		my $fn = md5_hex($text) ;
+		$fn = "$_dir_eq/$fn.png" ;
+		my $path = $fn ;
+		my $url = $fn ;
+		my $ret = system qq($_exe_transformula $text $path) ;
+		if ($ret == 0) {
+			return "![$fn]($url)" ;
+		} else {
+			return "!formular parse error!" ;	
+		}
 	} else {
-		return "!formular parse error!" ;	
+		# Use Mathjax as the client side rendering engine. 
+		# We substitue formula block with a special marker. 
+		# This is to avoid markdown engine corrupt the 
+		# formula content. After markdown compilation, we
+		# will post-process the text and put the equations
+		# back. 
+		my $di = md5_hex($text) ;
+		my $mk = "<pre>evermd-eqn-$di</pre>" ;
+		$h_eqns{$mk} = $text ;
+		return $mk ;
 	}
 }
 	
@@ -359,6 +376,44 @@ sub evermd_embed {
 	return $out ;
 }
 
+sub evermd_post {
+	my ($text) = @_ ;
+	if (defined $opt{m}){
+		# Mathjax will parse multiline $$ pair as formula. 
+		# By evermd convention, if $$ does not pair up in 
+		# one line, the text enclosed therein can not be 
+		# treated as formula. This is to leave a chance to 
+		# fall back. When you want to write dollar sign ($)
+		# in the article, that's the solution. I don't want 
+		# the users to stay clear mind and insert escape (\). 
+		# So here we escape for the users. 
+		$text =~ s/\$/\\\$/g ;
+
+		# Substitute equation back
+		for my $mk(keys %h_eqns){
+			#my $e = quotemeta ($h_eqns{$mk}) ;
+			my $e = $h_eqns{$mk} ;
+			#print STDERR $e, "\n" ;
+			$text =~ s/$mk/\$$e\$/g ;
+		}
+		my $mathjax_preamble = << 'EOF' ;
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+tex2jax: {
+inlineMath: [['$','$']],
+processEscapes: true
+}
+});
+</script>
+<script type="text/javascript"
+  src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+EOF
+		$text = $mathjax_preamble . $text ;
+	}
+	return $text ;
+}
+
 sub heading_name2id {
 	my ($name) = @_ ;
 	$name =~ s/\s/_/g ;
@@ -418,18 +473,23 @@ sub output {
 
 # To help Tlist find this point
 sub main {
+	# Input
 	my @in = input() ;
-	@in = evermd_get_headings(@in) ;
-	my $str_pre = evermd_pre(@in) ;
-	#my $str_pre = evermd_pre(isolate_formula(input())) ;
-	#print $str_pre ;
 
+	# Parse headings for later use in TOC. 
+	@in = evermd_get_headings(@in) ;
+
+	# Preprocessing, parse evermd-syntax sections. 
+	my $str_pre = evermd_pre(@in) ;
+
+	# Pass preprocessed evermd document to markdown engine. 
 	my ($fh_pre, $fn_pre) = open_tmp() ;
 	print $fh_pre $str_pre ;
+	my $str_md = `cat $fn_pre | $_exe_markdown` ;
 
-	#print STDERR $str_pre ;
-
-	my $str_post = `cat $fn_pre | $_exe_markdown` ;
+	# Post processing. 
+	# e.g. plug formula string back for use in mathjax
+	my $str_post = evermd_post($str_md) ;
 
 	if (defined($opt{t}) && defined($opt{n})) {
 		output(evermd_embed($opt{t}, $opt{n}, $str_post)) ;
