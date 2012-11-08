@@ -40,7 +40,8 @@ usage: evermd [-t {template}] [-n {marker}] [-o fn_output] [-m] [fn_input]
         use is "{evermd:template:text}". 
     -o: Output filename. If not specified, output to STDOUT. 
     [fn_input]: Input filename. If not specified, input from STDIN. 
-    -m: Use MathJax as the rendering engine. 
+    -m: Use MathJax as the formula rendering engine. 
+    -i: Render formula as images.
 cautions:
     -n: This is and PerlRE. e.g. If your marker name is "[% body %]", 
         Then your CLI should look like:
@@ -52,7 +53,7 @@ EOF
 
 sub init{
 	use Getopt::Std;
-	my $opt_string = 'mt:n:o:hv';
+	my $opt_string = 'imt:n:o:hv';
 	getopts( "$opt_string", \%opt ) or usage();
 	usage() if ($opt{h} or $opt{v});
 
@@ -74,6 +75,12 @@ sub init{
 		$_dir_eq = "$_dir/$_dir_eq" ;
 	}
 	
+	# Set Mathjax as default
+	if (defined $opt{i}){
+		$opt{m} = 0 ;
+	} else {
+		$opt{m} = 1 ;
+	}
 	# If not using Mathjax, we need a subfolder to store equations as images. 
 	$opt{m} or `mkdir -p $_dir_eq` ;
 }
