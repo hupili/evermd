@@ -9,7 +9,8 @@ use File::Temp qw(tempfile tempdir) ;
 use URI::Escape ;
 use Digest::MD5 qw(md5 md5_hex md5_base64) ;
 
-my $_exe_markdown = "$dir_execute/../third/github-markdown/bin/github-markdown.rb" ;
+my $_exe_markdown = "$dir_execute/../third/markdown/markdown" ;
+#my $_exe_markdown = "$dir_execute/../third/github-markdown/bin/github-markdown.rb" ;
 #my $_exe_markdown = "pandoc" ;
 my $_exe_transformula = "$dir_execute/transformula.sh" ;
 
