@@ -187,7 +187,7 @@ sub parse_var{
 			my $sp = " " x ($l * 3) ;
 			$tmp .= "$sp* [$h](#$id)\n" ;
 		}
-		$tmp = qq(\n<a id="__toc__"></a>TOC:\n$tmp) ;
+		$tmp = qq(\n<a id="__toc__"></a>TOC:\n\n$tmp) ;
 		#print STDERR $tmp; 
 		return $tmp ;
 	} else {
