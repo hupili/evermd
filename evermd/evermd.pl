@@ -9,10 +9,11 @@ use File::Temp qw(tempfile tempdir) ;
 use URI::Escape ;
 use Digest::MD5 qw(md5 md5_hex md5_base64) ;
 
-my $_exe_markdown = "$dir_execute/../third/markdown/markdown" ;
-#my $_exe_markdown = "$dir_execute/../third/github-markdown/bin/github-markdown.rb" ;
+#my $_exe_markdown = "$dir_execute/../third/markdown/markdown" ;
+my $_exe_markdown = "$dir_execute/../third/github-markdown/bin/github-markdown.rb" ;
 #my $_exe_markdown = "pandoc" ;
 my $_exe_transformula = "$dir_execute/transformula.sh" ;
+our $_formula_font = "\\large" ;
 
 our $ARGC = @ARGV ;
 our %opt ;
@@ -211,6 +212,7 @@ sub parse_comment{
 
 sub _parse_formula{
 	my ($text, $inline) = @_ ;
+	$text = "{$_formula_font $text}" ;
 	if (! defined $opt{m}){
 		# Use '_exe_transformula' as the backend to convert equation into images. 
 		$text = uri_escape($text) ;
@@ -408,6 +410,13 @@ sub evermd_post {
 		# in the article, that's the solution. I don't want 
 		# the users to stay clear mind and insert escape (\). 
 		# So here we escape for the users. 
+		#TODO:
+		#    The following line will substitute '$' sign 
+		#    inside code block. To fix:
+		#    1. In this post processing stage, recognize 
+		#    code block first. 
+		#    2. Try to compile formula into MathML and disable
+		#    '$' wrapped formulae in mathjax configuration.
 		$text =~ s/\$/\\\$/g ;
 
 		# Substitute equation back
