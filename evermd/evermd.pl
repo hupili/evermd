@@ -9,10 +9,15 @@ use File::Temp qw(tempfile tempdir) ;
 use URI::Escape ;
 use Digest::MD5 qw(md5 md5_hex md5_base64) ;
 
+# See ./markdown.sh for the parameters of the script. 
+# Your own backend should conform to the style
 #my $_exe_markdown = "$dir_execute/../third/markdown/markdown" ;
-my $_exe_markdown = "$dir_execute/../third/github-markdown/bin/github-markdown.rb" ;
+#my $_exe_markdown = "$dir_execute/../third/github-markdown/bin/github-markdown.rb" ;
+#my $_exe_markdown = "markdown" ;
 #my $_exe_markdown = "pandoc" ;
+
 my $_exe_transformula = "$dir_execute/transformula.sh" ;
+my $_exe_markdown = "$dir_execute/markdown.sh" ;
 our $_formula_font = "\\large" ;
 
 our $ARGC = @ARGV ;
@@ -519,8 +524,11 @@ sub main {
 
 	# Pass preprocessed evermd document to markdown engine. 
 	my ($fh_pre, $fn_pre) = open_tmp() ;
+	my ($fh_mid, $fn_mid) = open_tmp() ;
 	print $fh_pre $str_pre ;
-	my $str_md = `cat $fn_pre | $_exe_markdown` ;
+	#my $str_md = `cat $fn_pre | $_exe_markdown` ;
+	`$_exe_markdown $fn_pre $fn_mid` ;
+	my $str_md = `cat $fn_mid` ;
 
 	# Post processing. 
 	# e.g. plug formula string back for use in mathjax
