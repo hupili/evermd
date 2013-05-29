@@ -38,6 +38,10 @@ our $_dir_eq = "_eq" ;
 our %h_attrs = () ;
 our %h_eqns = () ;
 
+# Github's md API eat your HTML tags. 
+# We must preserve our own tags during the preprocessing and substitute it back later.
+our %h_preserve = (); 
+
 sub usage {
 	print STDERR << "EOF" ;
 usage: evermd [-t {template}] [-n {marker}] [-o fn_output] [-m] [fn_input]
@@ -106,6 +110,24 @@ sub input {
 # returns: ($filehandle, $filename)
 sub open_tmp {
 	return tempfile(UNLINK => 1, SUFFIX => "evermd") ;
+}
+
+sub preserve_text {
+	my ($text) = @_;
+	my $count = scalar %h_preserve; # For disambituity
+	my $di = md5_hex("$count" . $text);
+	my $mk = "<pre>evermd-eqn-$di</pre>";
+	$h_preserve{$mk} = $text; 
+	return $mk
+}
+
+sub substitute_text_back {
+	my ($input) = @_; 
+	for my $mk(keys %h_preserve){
+		my $text = $h_preserve{$mk};
+		$input =~ s/$mk/$text/g;
+	}
+	return $input;
 }
 
 sub parse_table_line{
@@ -451,6 +473,9 @@ processEscapes: true
 EOF
 		$text = $mathjax_preamble . $text ;
 	}
+	
+	$text = substitute_text_back($text); 
+
 	return $text ;
 }
 
@@ -489,7 +514,9 @@ sub evermd_get_headings {
 				my $id = heading_name2id($h) ;
 				$id = "h${counter}_$id" ; #solve heading repitition problem
 				push @headings, {heading=>$h, id=>$id, level=>$level} ;
-				push @out, qq(\n<a id="$id"></a>\n) ;
+				#push @out, qq(\n<a id="$id"></a>\n) ;
+				my $heading_id = qq(\n<a id="$id"></a>\n);
+				push @out, preserve_text($heading_id);
 			}
 		} 
 		push @out, $line ;
