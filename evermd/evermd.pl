@@ -218,6 +218,7 @@ sub parse_var{
 		$tmp = qq(\n<a id="__toc__"></a>TOC:\n\n$tmp) ;
 		#print STDERR $tmp; 
 		return $tmp ;
+		#return preserve_text($tmp) ;
 	} else {
 		die("unkown variable: $text\n") ;
 	}
@@ -482,7 +483,7 @@ EOF
 sub heading_name2id {
 	my ($name) = @_ ;
 	$name =~ s/\s/_/g ;
-	$name =~ s/[\.\[\]\(\)"',:;-]\//_/g ;
+	$name =~ s/[\.\[\]\(\)"',:;\-\/]/_/g ;
 	return $name
 }
 
