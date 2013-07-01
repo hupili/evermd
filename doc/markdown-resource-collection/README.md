@@ -51,6 +51,14 @@ they do not output the expected HTML, especially when many codes are involved.
 
 ## Related Stuffs
 
+### markdown-here
+
+It is a powerful plugin for browsers and Thunderbird, 
+so that you can write emails using MD. 
+
+   * Project: <https://github.com/adam-p/markdown-here>
+   * The author's [notes](https://github.com/adam-p/markdown-here/blob/master/NOTES.md)
+
 ### jemdoc
 
 See the [cheatsheet](http://jemdoc.jaboc.net/cheatsheet.html) for its syntax. 
