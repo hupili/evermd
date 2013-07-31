@@ -51,6 +51,27 @@ they do not output the expected HTML, especially when many codes are involved.
 
 ## Related Stuffs
 
+### markdown-here
+
+It is a powerful plugin for browsers and Thunderbird, 
+so that you can write emails using MD. 
+
+   * Project: <https://github.com/adam-p/markdown-here>
+   * The author's [notes](https://github.com/adam-p/markdown-here/blob/master/NOTES.md)
+
+### jemdoc
+
+See the [cheatsheet](http://jemdoc.jaboc.net/cheatsheet.html) for its syntax. 
+See [Github repo](https://github.com/jem/jemdoc)
+
+Remarks:
+
+   * Jemdoc has many users for academic homepage. 
+   * The syntax is a bit different from MD and Latex. I still prefer the EMD flavour. 
+   * The [latex2png](https://github.com/jem/jemdoc/blob/master/latexmath2png.py) converter is worth looking at. 
+   It's useful to include it in EMD as an option for equation rendering. 
+   Needs local command line support of `latex`.
+
 ### Light-weight Markup Language
 
 [http://en.wikipedia.org/wiki/Lightweight_markup_language](http://en.wikipedia.org/wiki/Lightweight_markup_language)
