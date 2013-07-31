@@ -91,7 +91,7 @@ The preceding "-" is essential, or Tlist will trim the string.
 
 ### Tlist settings
 
-Configure the last piece in "$HOME/.ctags":
+Configure the last piece in "$HOME/.vimrc":
 
 	let g:tlist_markdown_settings = 'markdown;h:Headlins'
 
