@@ -12,14 +12,3 @@ for my $o(@ARGV){
 
 exec qq($dir_evermd/evermd.pl $option) ;
 
-
-#The following bash does not work generally. 
-#When some options contain blanks, the option 
-#is separated, resulting false parsing of 
-#evermd.pl
-
-##!/usr/bin/env bash
-#
-#dir_evermd=<<DIR_EVERMD>>
-#perl $dir_evermd/evermd.pl $@
-#exit $?
