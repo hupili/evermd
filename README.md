@@ -1,3 +1,26 @@
+Out of maintenance notice:
+
+This repo is two years old and out of maintenance.
+The scripts may still run, with some environment steup.
+However, I would recommend you to many other MD locales which already support the features proposed in this project.
+During the first year I use MD, I find it's inconvenient and extend it in this project.
+Apparently, people have realized similar problems and worked in different directions.
+There might be a hundred MD locales out there with compilers implemented in different languages.
+At the second year, I tried to make the [2.0 proposal](http://blog.hupili.net/p--20130731-markdown-extension/).
+It was out of OCD or perfectionist. 
+Now my new take is: let MD do what it is good at.
+Look at the new features from this repo and other extensions.
+They are useful but seldom used..
+The only exception is TeX formula. 
+Now, nearly everyone supports it via MathJax, a de facto standard.
+That is because we really need to write formula a lot. 
+However, we do not deadly need tables and other fancy stuffs.
+
+Nevertheless, this repo is still useful for people to find some Perl sample codes.
+
+------------
+
+
 # evermd
 
 Ever MarkDown! Solution Stacks for Markdown Usage
